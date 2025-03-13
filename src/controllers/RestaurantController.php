@@ -3,143 +3,28 @@ require_once __DIR__ . '/../models/RestaurantProfile.php';
 require_once __DIR__ . '/../models/Meal.php';
 require_once __DIR__ . '/../models/Ingredient.php';
 require_once __DIR__ . '/../utils/Auth.php';
+require_once __DIR__ . '/../models/Order.php';
 
 class RestaurantController
 {
     private $restaurantModel;
-    private $orderModel;
     private $mealModel;
     private $ingredientModel;
     private $auth;
+    private $orderModel;
 
     public function __construct()
     {
         $this->restaurantModel = new RestaurantProfile();
         $this->mealModel = new Meal();
         $this->ingredientModel = new Ingredient();
+        $this->orderModel = new Order(); // Adicione esta linha
         $this->auth = Auth::getInstance();
 
         // Check if user is logged in and has restaurant role
         if (!$this->auth->hasRole(['restaurant', 'admin'])) {
             redirect('/403');
         }
-    }
-
-    /**
-     * List all orders for the restaurant
-     */
-    public function index()
-    {
-        $userId = $this->auth->getUserId();
-        $restaurant = $this->restaurantModel->getByUserId($userId);
-
-        if (!$restaurant) {
-            redirect('/403');
-        }
-
-        // Get status filter if provided
-        $status = $_GET['status'] ?? '';
-
-        // Get all orders for this restaurant
-        $orders = $this->orderModel->getByRestaurantId($restaurant['id']);
-
-        // Filter by status if provided
-        if (!empty($status)) {
-            $orders = array_filter($orders, function ($order) use ($status) {
-                return $order['status'] === $status;
-            });
-        }
-
-        view('restaurant/orders', [
-            'restaurant' => $restaurant,
-            'orders' => $orders,
-            'statusFilter' => $status
-        ]);
-    }
-
-    /**
-     * View order details
-     */
-    public function viewOrder()
-    {
-        $userId = $this->auth->getUserId();
-        $restaurant = $this->restaurantModel->getByUserId($userId);
-
-        if (!$restaurant) {
-            redirect('/403');
-        }
-
-        $orderId = $_GET['id'] ?? 0;
-        $order = $this->orderModel->getById($orderId);
-
-        if (!$order) {
-            redirect('/restaurant/orders');
-        }
-
-        // Get order items
-        $allOrderItems = $this->orderModel->getOrderItems($orderId);
-
-        // Filter only items from this restaurant
-        $orderItems = array_filter($allOrderItems, function ($item) use ($restaurant) {
-            return $item['restaurant_id'] == $restaurant['id'];
-        });
-
-        // If this restaurant has no items in this order, deny access
-        if (empty($orderItems)) {
-            redirect('/restaurant/orders');
-        }
-
-        view('restaurant/view_order', [
-            'restaurant' => $restaurant,
-            'order' => $order,
-            'orderItems' => $orderItems,
-            'hasOtherRestaurants' => count($allOrderItems) > count($orderItems)
-        ]);
-    }
-
-    /**
-     * Update order status
-     */
-    public function updateOrderStatus()
-    {
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            redirect('/restaurant/orders');
-        }
-
-        $userId = $this->auth->getUserId();
-        $restaurant = $this->restaurantModel->getByUserId($userId);
-
-        if (!$restaurant) {
-            redirect('/403');
-        }
-
-        $orderId = $_POST['order_id'] ?? 0;
-        $status = $_POST['status'] ?? '';
-        $notes = $_POST['notes'] ?? '';
-
-        // Validate status
-        $allowedStatuses = ['processing', 'shipped', 'delivered'];
-        if (!in_array($status, $allowedStatuses)) {
-            redirect('/restaurant/orders?error=invalid_status');
-        }
-
-        // Check if order exists and has items from this restaurant
-        $allOrderItems = $this->orderModel->getOrderItems($orderId);
-        $restaurantItems = array_filter($allOrderItems, function ($item) use ($restaurant) {
-            return $item['restaurant_id'] == $restaurant['id'];
-        });
-
-        if (empty($restaurantItems)) {
-            redirect('/restaurant/orders?error=not_found');
-        }
-
-        // Update order status
-        $this->orderModel->updateStatus($orderId, $status, $notes);
-
-        // Add to status history
-        $this->orderModel->addStatusHistory($orderId, $status, $notes);
-
-        redirect('/restaurant/orders?success=updated');
     }
 
     /**
@@ -489,5 +374,122 @@ class RestaurantController
             'success' => $success,
             'error' => $error
         ]);
+    }
+
+    /**
+     * List all orders for the restaurant
+     */
+    public function orders()
+    {
+        $userId = $this->auth->getUserId();
+        $restaurant = $this->restaurantModel->getByUserId($userId);
+
+        if (!$restaurant) {
+            redirect('/403');
+        }
+
+        // Get status filter if provided
+        $status = $_GET['status'] ?? '';
+
+        // Get all orders for this restaurant
+        $orders = $this->orderModel->getByRestaurantId($restaurant['id']);
+
+        // Filter by status if provided
+        if (!empty($status)) {
+            $orders = array_filter($orders, function ($order) use ($status) {
+                return $order['status'] === $status;
+            });
+        }
+
+        view('restaurant/orders', [
+            'restaurant' => $restaurant,
+            'orders' => $orders,
+            'statusFilter' => $status
+        ]);
+    }
+
+    /**
+     * View order details
+     */
+    public function viewOrder()
+    {
+        $userId = $this->auth->getUserId();
+        $restaurant = $this->restaurantModel->getByUserId($userId);
+
+        if (!$restaurant) {
+            redirect('/403');
+        }
+
+        $orderId = $_GET['id'] ?? 0;
+        $order = $this->orderModel->getById($orderId);
+
+        if (!$order) {
+            redirect('/restaurant/orders');
+        }
+
+        // Get order items
+        $allOrderItems = $this->orderModel->getOrderItems($orderId);
+
+        // Filter only items from this restaurant
+        $orderItems = array_filter($allOrderItems, function ($item) use ($restaurant) {
+            return $item['restaurant_id'] == $restaurant['id'];
+        });
+
+        // If this restaurant has no items in this order, deny access
+        if (empty($orderItems)) {
+            redirect('/restaurant/orders');
+        }
+
+        view('restaurant/view_order', [
+            'restaurant' => $restaurant,
+            'order' => $order,
+            'orderItems' => $orderItems,
+            'hasOtherRestaurants' => count($allOrderItems) > count($orderItems)
+        ]);
+    }
+
+    /**
+     * Update order status
+     */
+    public function updateOrderStatus()
+    {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            redirect('/restaurant/orders');
+        }
+
+        $userId = $this->auth->getUserId();
+        $restaurant = $this->restaurantModel->getByUserId($userId);
+
+        if (!$restaurant) {
+            redirect('/403');
+        }
+
+        $orderId = $_POST['order_id'] ?? 0;
+        $status = $_POST['status'] ?? '';
+        $notes = $_POST['notes'] ?? '';
+
+        // Validate status
+        $allowedStatuses = ['processing', 'shipped', 'delivered'];
+        if (!in_array($status, $allowedStatuses)) {
+            redirect('/restaurant/orders?error=invalid_status');
+        }
+
+        // Check if order exists and has items from this restaurant
+        $allOrderItems = $this->orderModel->getOrderItems($orderId);
+        $restaurantItems = array_filter($allOrderItems, function ($item) use ($restaurant) {
+            return $item['restaurant_id'] == $restaurant['id'];
+        });
+
+        if (empty($restaurantItems)) {
+            redirect('/restaurant/orders?error=not_found');
+        }
+
+        // Update order status
+        $this->orderModel->updateStatus($orderId, $status, $notes);
+
+        // Add to status history
+        $this->orderModel->addStatusHistory($orderId, $status, $notes);
+
+        redirect('/restaurant/orders?success=updated');
     }
 }

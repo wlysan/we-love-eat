@@ -60,6 +60,9 @@ $routes = [
     '/restaurant/ingredients' => 'RestaurantController::ingredients',
     '/restaurant/ingredients/create' => 'RestaurantController::createIngredient',
     '/restaurant/ingredients/edit' => 'RestaurantController::editIngredient',
+    '/restaurant/orders' => 'RestaurantController::orders',
+    '/restaurant/orders/view' => 'RestaurantController::viewOrder',
+    '/restaurant/orders/update-status' => 'RestaurantController::updateOrderStatus',
 
     // Chat routes
     '/chats' => 'ChatController::index',
@@ -100,7 +103,7 @@ $routes = [
 
 // Authentication and role requirements for routes
 $authRequirements = [
-    'public' => ['/', '/login', '/register', '/logout', '/404', '/403'],    
+    'public' => ['/', '/login', '/register', '/logout', '/404', '/403'],
     'user' => [
         '/profile',
         '/profile/edit',
@@ -120,9 +123,9 @@ $authRequirements = [
         '/chats/create',
         '/chats/progress',
         '/meals/catalog',
-        '/meals/order', 
-        '/meals/orders', 
-        '/meals/orders/view', 
+        '/meals/order',
+        '/meals/orders',
+        '/meals/orders/view',
         '/meals/orders/cancel'
     ],
     'nutritionist' => [
@@ -143,7 +146,10 @@ $authRequirements = [
         '/restaurant/meals/view',
         '/restaurant/ingredients',
         '/restaurant/ingredients/create',
-        '/restaurant/ingredients/edit'
+        '/restaurant/ingredients/edit',
+        '/restaurant/orders',
+        '/restaurant/orders/view',
+        '/restaurant/orders/update-status'
     ],
     'admin' => [
         '/admin/dashboard',
@@ -157,7 +163,8 @@ $authRequirements = [
         '/admin/restaurants/create',
         '/admin/restaurants/edit'
     ],
-    
+
+
 ];
 
 // Check if route exists
