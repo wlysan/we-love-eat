@@ -15,44 +15,53 @@ class Order
      */
     public function create($data)
     {
-        $fields = [
-            'user_id',
-            'delivery_address',
-            'delivery_date',
-            'payment_method',
-            'total',
-            'status'
-        ];
-        $placeholders = [
-            ':user_id',
-            ':delivery_address',
-            ':delivery_date',
-            ':payment_method',
-            ':total',
-            ':status'
-        ];
-        $params = [
-            ':user_id' => $data['user_id'],
-            ':delivery_address' => $data['delivery_address'],
-            ':delivery_date' => $data['delivery_date'],
-            ':payment_method' => $data['payment_method'],
-            ':total' => $data['total'],
-            ':status' => $data['status']
-        ];
-
-        if (isset($data['notes'])) {
-            $fields[] = 'notes';
-            $placeholders[] = ':notes';
-            $params[':notes'] = $data['notes'];
-        }
-
-        $sql = "INSERT INTO meal_orders (" . implode(', ', $fields) . ") 
-                VALUES (" . implode(', ', $placeholders) . ")";
-
         try {
+            // Debug
+            file_put_contents('order_create_log.txt', "Iniciando criação de pedido: " . print_r($data, true) . "\n", FILE_APPEND);
+
+            $fields = [
+                'user_id',
+                'delivery_address',
+                'delivery_date',
+                'payment_method',
+                'total',
+                'status'
+            ];
+            $placeholders = [
+                ':user_id',
+                ':delivery_address',
+                ':delivery_date',
+                ':payment_method',
+                ':total',
+                ':status'
+            ];
+            $params = [
+                ':user_id' => $data['user_id'],
+                ':delivery_address' => $data['delivery_address'],
+                ':delivery_date' => $data['delivery_date'],
+                ':payment_method' => $data['payment_method'],
+                ':total' => $data['total'],
+                ':status' => $data['status']
+            ];
+
+            if (isset($data['notes'])) {
+                $fields[] = 'notes';
+                $placeholders[] = ':notes';
+                $params[':notes'] = $data['notes'];
+            }
+
+            $sql = "INSERT INTO meal_orders (" . implode(', ', $fields) . ") 
+                    VALUES (" . implode(', ', $placeholders) . ")";
+
+            file_put_contents('order_create_log.txt', "SQL: $sql\n", FILE_APPEND);
+            file_put_contents('order_create_log.txt', "Params: " . print_r($params, true) . "\n", FILE_APPEND);
+
             $orderId = $this->db->insert($sql, $params);
+            file_put_contents('order_create_log.txt', "Order ID: " . ($orderId ? $orderId : "false") . "\n", FILE_APPEND);
+
             return $orderId;
         } catch (Exception $e) {
+            file_put_contents('order_create_log.txt', "Erro: " . $e->getMessage() . "\n", FILE_APPEND);
             return false;
         }
     }

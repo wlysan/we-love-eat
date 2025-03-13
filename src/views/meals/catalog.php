@@ -381,6 +381,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // Place order button
     document.getElementById('placeOrderBtn').addEventListener('click', function() {
         if (document.getElementById('orderForm').checkValidity()) {
+
+            document.getElementById('orderForm').submit();
             // Hide order confirmation modal
             const orderConfirmationModal = bootstrap.Modal.getInstance(document.getElementById('orderConfirmationModal'));
             orderConfirmationModal.hide();

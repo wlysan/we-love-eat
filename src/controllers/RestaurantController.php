@@ -410,6 +410,8 @@ class RestaurantController
 
     /**
      * View order details
+     */ /**
+     * View order details
      */
     public function viewOrder()
     {

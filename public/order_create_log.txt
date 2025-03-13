@@ -1,0 +1,25 @@
+Iniciando criação de pedido: Array
+(
+    [user_id] => 5
+    [delivery_address] => Rua Padre Anchieta
+    [delivery_date] => 2025-03-13
+    [payment_method] => debit
+    [notes] => Teste
+    [total] => 45
+    [status] => pending
+)
+
+SQL: INSERT INTO meal_orders (user_id, delivery_address, delivery_date, payment_method, total, status, notes) 
+                    VALUES (:user_id, :delivery_address, :delivery_date, :payment_method, :total, :status, :notes)
+Params: Array
+(
+    [:user_id] => 5
+    [:delivery_address] => Rua Padre Anchieta
+    [:delivery_date] => 2025-03-13
+    [:payment_method] => debit
+    [:total] => 45
+    [:status] => pending
+    [:notes] => Teste
+)
+
+Order ID: 1
