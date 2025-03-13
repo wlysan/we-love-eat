@@ -7,7 +7,7 @@
             <p class="text-muted">Bem-vindo(a) de volta, <?= $user['name'] ?>!</p>
         </div>
     </div>
-    
+
     <?php if (empty($profile) || empty($profile['current_weight']) || empty($profile['height'])): ?>
         <div class="alert alert-warning">
             <h5><i class="fas fa-exclamation-triangle me-2"></i> Complete seu perfil</h5>
@@ -17,7 +17,7 @@
             <a href="/profile/edit" class="btn btn-sm btn-warning mt-2">Completar Perfil</a>
         </div>
     <?php endif; ?>
-    
+
     <!-- Health Metrics -->
     <div class="row mb-4">
         <div class="col-12">
@@ -38,7 +38,7 @@
                                     <div class="card-body text-center">
                                         <h6 class="text-muted mb-2">Peso Atual</h6>
                                         <h4><?= Formatter::formatWeight($profile['current_weight']) ?></h4>
-                                        
+
                                         <?php if (!empty($progress['weight_change'])): ?>
                                             <span class="badge <?= $progress['weight_change'] < 0 ? 'bg-success' : 'bg-danger' ?>">
                                                 <?= $progress['weight_change'] < 0 ? '' : '+' ?><?= Formatter::formatWeight($progress['weight_change']) ?>
@@ -48,14 +48,14 @@
                                 </div>
                             </div>
                         <?php endif; ?>
-                        
+
                         <?php if (!empty($profile) && !empty($profile['goal_weight'])): ?>
                             <div class="col-md-3 mb-3">
                                 <div class="card border-0 bg-light">
                                     <div class="card-body text-center">
                                         <h6 class="text-muted mb-2">Peso Meta</h6>
                                         <h4><?= Formatter::formatWeight($profile['goal_weight']) ?></h4>
-                                        
+
                                         <?php if (!empty($profile['current_weight'])): ?>
                                             <span class="badge bg-primary">
                                                 <?= Formatter::formatWeight(abs($profile['goal_weight'] - $profile['current_weight'])) ?> restantes
@@ -65,14 +65,14 @@
                                 </div>
                             </div>
                         <?php endif; ?>
-                        
+
                         <?php if (!empty($measurements) && !empty($measurements[0]['body_fat_percentage'])): ?>
                             <div class="col-md-3 mb-3">
                                 <div class="card border-0 bg-light">
                                     <div class="card-body text-center">
                                         <h6 class="text-muted mb-2">Gordura Corporal</h6>
                                         <h4><?= Formatter::formatPercentage($measurements[0]['body_fat_percentage']) ?></h4>
-                                        
+
                                         <?php if (!empty($progress['body_fat_change'])): ?>
                                             <span class="badge <?= $progress['body_fat_change'] < 0 ? 'bg-success' : 'bg-danger' ?>">
                                                 <?= $progress['body_fat_change'] < 0 ? '' : '+' ?><?= Formatter::formatPercentage($progress['body_fat_change']) ?>
@@ -82,14 +82,14 @@
                                 </div>
                             </div>
                         <?php endif; ?>
-                        
+
                         <?php if (!empty($measurements) && !empty($measurements[0]['waist'])): ?>
                             <div class="col-md-3 mb-3">
                                 <div class="card border-0 bg-light">
                                     <div class="card-body text-center">
                                         <h6 class="text-muted mb-2">Circunferência Abdominal</h6>
                                         <h4><?= Formatter::formatHeight($measurements[0]['waist']) ?></h4>
-                                        
+
                                         <?php if (!empty($progress['waist_change'])): ?>
                                             <span class="badge <?= $progress['waist_change'] < 0 ? 'bg-success' : 'bg-danger' ?>">
                                                 <?= $progress['waist_change'] < 0 ? '' : '+' ?><?= Formatter::formatHeight($progress['waist_change']) ?>
@@ -100,7 +100,7 @@
                             </div>
                         <?php endif; ?>
                     </div>
-                    
+
                     <?php if (!empty($measurements)): ?>
                         <div class="mt-4">
                             <h6>Histórico de Peso</h6>
@@ -116,7 +116,7 @@
             </div>
         </div>
     </div>
-    
+
     <!-- Diet Plans -->
     <div class="row mb-4">
         <div class="col-md-6 mb-3">
@@ -156,7 +156,7 @@
                 </div>
             </div>
         </div>
-        
+
         <!-- Today's Meals -->
         <div class="col-md-6 mb-3">
             <div class="card shadow-sm h-100">
@@ -208,51 +208,85 @@
                 </div>
             </div>
         </div>
+
+        <!-- Add this to the dashboard/user.php file inside one of the rows -->
+
+        <div class="col-md-6 mb-3">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-white">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="card-title mb-0">Refeições Populares</h5>
+                        <a href="/meals/catalog" class="btn btn-sm btn-outline-primary">Ver Catálogo</a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <?php if (empty($popularMeals)): ?>
+                        <p class="text-center text-muted my-4">Ainda não há refeições populares para mostrar.</p>
+                    <?php else: ?>
+                        <div class="list-group list-group-flush">
+                            <?php foreach ($popularMeals as $meal): ?>
+                                <div class="list-group-item p-3">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h6 class="mb-1"><?= $meal['name'] ?></h6>
+                                            <p class="mb-0 text-muted small"><?= $meal['restaurant_name'] ?> | <?= Formatter::getMealTypeName($meal['meal_type']) ?></p>
+                                        </div>
+                                        <div class="text-end">
+                                            <div class="fw-bold text-primary mb-1"><?= Formatter::formatCurrency($meal['price']) ?></div>
+                                            <a href="/meals/catalog" class="btn btn-sm btn-outline-primary">Pedir</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                    <?php endif; ?>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
 <?php if (!empty($measurements)): ?>
-<!-- Chart.js for weight history -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Extract data for chart
-    const dates = [
-        <?php foreach (array_reverse(array_slice($measurements, 0, 10)) as $m): ?>
-            '<?= Formatter::formatDate($m['date']) ?>',
-        <?php endforeach; ?>
-    ];
-    
-    const weights = [
-        <?php foreach (array_reverse(array_slice($measurements, 0, 10)) as $m): ?>
-            <?= $m['weight'] ?? 'null' ?>,
-        <?php endforeach; ?>
-    ];
-    
-    // Create chart
-    const ctx = document.getElementById('weightChart').getContext('2d');
-    new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: dates,
-            datasets: [{
-                label: 'Peso (kg)',
-                data: weights,
-                fill: false,
-                borderColor: '#00a651',
-                tension: 0.1
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                y: {
-                    beginAtZero: false
+    <!-- Chart.js for weight history -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Extract data for chart
+            const dates = [
+                <?php foreach (array_reverse(array_slice($measurements, 0, 10)) as $m): ?> '<?= Formatter::formatDate($m['date']) ?>',
+                <?php endforeach; ?>
+            ];
+
+            const weights = [
+                <?php foreach (array_reverse(array_slice($measurements, 0, 10)) as $m): ?>
+                    <?= $m['weight'] ?? 'null' ?>,
+                <?php endforeach; ?>
+            ];
+
+            // Create chart
+            const ctx = document.getElementById('weightChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: dates,
+                    datasets: [{
+                        label: 'Peso (kg)',
+                        data: weights,
+                        fill: false,
+                        borderColor: '#00a651',
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: false
+                        }
+                    }
                 }
-            }
-        }
-    });
-});
-</script>
+            });
+        });
+    </script>
 <?php endif; ?>

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Main entry point of the application
  */
@@ -23,21 +24,21 @@ $routes = [
     '/login' => 'AuthController::login',
     '/register' => 'AuthController::register',
     '/logout' => 'AuthController::logout',
-    
+
     // User routes
     '/profile' => 'UserController::profile',
     '/profile/edit' => 'UserController::editProfile',
     '/profile/measurements' => 'UserController::measurements',
     '/profile/measurements/add' => 'UserController::addMeasurement',
     '/dashboard' => 'DashboardController::user',
-    
+
     // Diet routes
     '/diets' => 'DietController::index',
     '/diets/view' => 'DietController::view',
     '/diets/meals' => 'DietController::meals',
     '/diets/select-meal' => 'DietController::selectMeal',
     '/diets/update-status' => 'DietController::updateStatus',
-    
+
     // Nutritionist routes
     '/nutritionists' => 'NutritionistController::index',
     '/nutritionists/view' => 'NutritionistController::view',
@@ -49,7 +50,7 @@ $routes = [
     '/nutritionist/diets/view' => 'NutritionistController::viewDiet',
     '/nutritionist/diets/add-meal' => 'NutritionistController::addMeal',
     '/nutritionist/diets/edit-meal' => 'NutritionistController::editMeal',
-    
+
     // Restaurant routes
     '/restaurant/dashboard' => 'DashboardController::restaurant',
     '/restaurant/meals' => 'RestaurantController::meals',
@@ -59,14 +60,14 @@ $routes = [
     '/restaurant/ingredients' => 'RestaurantController::ingredients',
     '/restaurant/ingredients/create' => 'RestaurantController::createIngredient',
     '/restaurant/ingredients/edit' => 'RestaurantController::editIngredient',
-    
+
     // Chat routes
     '/chats' => 'ChatController::index',
     '/chats/view' => 'ChatController::view',
     '/chats/send' => 'ChatController::send',
     '/chats/create' => 'ChatController::create',
     '/chats/progress' => 'ChatController::toggleProgress',
-    
+
     // Admin routes
     '/admin/dashboard' => 'AdminController::dashboard',
     '/admin/users' => 'AdminController::users',
@@ -78,13 +79,20 @@ $routes = [
     '/admin/restaurants' => 'AdminController::restaurants',
     '/admin/restaurants/create' => 'AdminController::createRestaurant',
     '/admin/restaurants/edit' => 'AdminController::editRestaurant',
-    
+
+    // Meal catalog and ordering routes
+    '/meals/catalog' => 'MealController::catalog',
+    '/meals/order' => 'MealController::placeOrder',
+    '/meals/orders' => 'MealController::orders',
+    '/meals/orders/view' => 'MealController::viewOrder',
+    '/meals/orders/cancel' => 'MealController::cancelOrder',
+
     // API routes
     '/api/meals' => 'ApiController::meals',
     '/api/meals/nutrition' => 'ApiController::mealNutrition',
     '/api/ingredients' => 'ApiController::ingredients',
     '/api/measurements' => 'ApiController::measurements',
-    
+
     // Error routes
     '/404' => 'ErrorController::notFound',
     '/403' => 'ErrorController::forbidden'
@@ -92,28 +100,64 @@ $routes = [
 
 // Authentication and role requirements for routes
 $authRequirements = [
-    'public' => ['/', '/login', '/register', '/logout', '/404', '/403'],
+    'public' => ['/', '/login', '/register', '/logout', '/404', '/403'],    
     'user' => [
-        '/profile', '/profile/edit', '/profile/measurements', '/profile/measurements/add',
-        '/dashboard', '/diets', '/diets/view', '/diets/meals', '/diets/select-meal', '/diets/update-status',
-        '/nutritionists', '/nutritionists/view', '/chats', '/chats/view', '/chats/send', '/chats/create',
-        '/chats/progress'
+        '/profile',
+        '/profile/edit',
+        '/profile/measurements',
+        '/profile/measurements/add',
+        '/dashboard',
+        '/diets',
+        '/diets/view',
+        '/diets/meals',
+        '/diets/select-meal',
+        '/diets/update-status',
+        '/nutritionists',
+        '/nutritionists/view',
+        '/chats',
+        '/chats/view',
+        '/chats/send',
+        '/chats/create',
+        '/chats/progress',
+        '/meals/catalog',
+        '/meals/order', 
+        '/meals/orders', 
+        '/meals/orders/view', 
+        '/meals/orders/cancel'
     ],
     'nutritionist' => [
-        '/nutritionist/dashboard', '/nutritionist/clients', '/nutritionist/diets',
-        '/nutritionist/diets/create', '/nutritionist/diets/edit', '/nutritionist/diets/view',
-        '/nutritionist/diets/add-meal', '/nutritionist/diets/edit-meal'
+        '/nutritionist/dashboard',
+        '/nutritionist/clients',
+        '/nutritionist/diets',
+        '/nutritionist/diets/create',
+        '/nutritionist/diets/edit',
+        '/nutritionist/diets/view',
+        '/nutritionist/diets/add-meal',
+        '/nutritionist/diets/edit-meal'
     ],
     'restaurant' => [
-        '/restaurant/dashboard', '/restaurant/meals', '/restaurant/meals/create',
-        '/restaurant/meals/edit', '/restaurant/meals/view', '/restaurant/ingredients',
-        '/restaurant/ingredients/create', '/restaurant/ingredients/edit'
+        '/restaurant/dashboard',
+        '/restaurant/meals',
+        '/restaurant/meals/create',
+        '/restaurant/meals/edit',
+        '/restaurant/meals/view',
+        '/restaurant/ingredients',
+        '/restaurant/ingredients/create',
+        '/restaurant/ingredients/edit'
     ],
     'admin' => [
-        '/admin/dashboard', '/admin/users', '/admin/users/create', '/admin/users/edit',
-        '/admin/nutritionists', '/admin/nutritionists/create', '/admin/nutritionists/edit',
-        '/admin/restaurants', '/admin/restaurants/create', '/admin/restaurants/edit'
-    ]
+        '/admin/dashboard',
+        '/admin/users',
+        '/admin/users/create',
+        '/admin/users/edit',
+        '/admin/nutritionists',
+        '/admin/nutritionists/create',
+        '/admin/nutritionists/edit',
+        '/admin/restaurants',
+        '/admin/restaurants/create',
+        '/admin/restaurants/edit'
+    ],
+    
 ];
 
 // Check if route exists
@@ -131,20 +175,20 @@ if ($requiresAuth && !$auth->isLoggedIn()) {
 if ($auth->isLoggedIn()) {
     $userRole = $auth->getUser()['role'];
     $allowedRoutes = array_merge($authRequirements['public'], $authRequirements['user']);
-    
+
     if ($userRole === 'nutritionist') {
         $allowedRoutes = array_merge($allowedRoutes, $authRequirements['nutritionist']);
     } elseif ($userRole === 'restaurant') {
         $allowedRoutes = array_merge($allowedRoutes, $authRequirements['restaurant']);
     } elseif ($userRole === 'admin') {
         $allowedRoutes = array_merge(
-            $allowedRoutes, 
-            $authRequirements['nutritionist'], 
-            $authRequirements['restaurant'], 
+            $allowedRoutes,
+            $authRequirements['nutritionist'],
+            $authRequirements['restaurant'],
             $authRequirements['admin']
         );
     }
-    
+
     if (!in_array($route, $allowedRoutes)) {
         redirect('/403');
     }

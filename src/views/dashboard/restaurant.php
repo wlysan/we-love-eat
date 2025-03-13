@@ -7,7 +7,7 @@
             <p class="text-muted">Bem-vindo(a), <?= $restaurant['name'] ?>!</p>
         </div>
     </div>
-    
+
     <div class="row mb-4">
         <div class="col-md-4 mb-3">
             <div class="card shadow-sm h-100 card-dashboard">
@@ -28,7 +28,7 @@
                 </div>
             </div>
         </div>
-        
+
         <div class="col-md-4 mb-3">
             <div class="card shadow-sm h-100 card-dashboard">
                 <div class="card-body">
@@ -48,7 +48,7 @@
                 </div>
             </div>
         </div>
-        
+
         <div class="col-md-4 mb-3">
             <div class="card shadow-sm h-100 card-dashboard">
                 <div class="card-body">
@@ -69,7 +69,7 @@
             </div>
         </div>
     </div>
-    
+
     <div class="row mb-4">
         <div class="col-md-6 mb-3">
             <div class="card shadow-sm">
@@ -100,7 +100,7 @@
                 </div>
             </div>
         </div>
-        
+
         <div class="col-md-6 mb-3">
             <div class="card shadow-sm">
                 <div class="card-header bg-white">
@@ -128,8 +128,46 @@
                 </div>
             </div>
         </div>
+
+        <!-- Add this to the dashboard/restaurant.php file after one of the existing cards -->
+
+        <!-- Recent Orders Card -->
+        <div class="col-md-6 mb-3">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-white">
+                    <h5 class="card-title mb-0">Pedidos Recentes</h5>
+                </div>
+                <div class="card-body">
+                    <?php if (empty($recentOrders)): ?>
+                        <p class="text-center text-muted my-4">Nenhum pedido recebido ainda.</p>
+                    <?php else: ?>
+                        <div class="list-group list-group-flush">
+                            <?php foreach ($recentOrders as $order): ?>
+                                <a href="/restaurant/orders/view?id=<?= $order['id'] ?>" class="list-group-item list-group-item-action">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h6 class="mb-1">Pedido #<?= $order['id'] ?></h6>
+                                        <span class="badge bg-<?= getStatusColor($order['status']) ?>">
+                                            <?= formatOrderStatus($order['status']) ?>
+                                        </span>
+                                    </div>
+                                    <p class="mb-1">Cliente: <?= $order['user_name'] ?></p>
+                                    <div class="d-flex justify-content-between">
+                                        <small class="text-muted"><?= Formatter::formatDateTime($order['created_at']) ?></small>
+                                        <strong><?= Formatter::formatCurrency($order['total']) ?></strong>
+                                    </div>
+                                </a>
+                            <?php endforeach; ?>
+                        </div>
+                    <?php endif; ?>
+                </div>
+                <div class="card-footer bg-white">
+                    <a href="/restaurant/orders" class="btn btn-sm btn-outline-primary">Ver Todos os Pedidos</a>
+                </div>
+            </div>
+        </div>
+
     </div>
-    
+
     <div class="row mb-4">
         <div class="col">
             <div class="card shadow-sm">
@@ -159,3 +197,30 @@
         </div>
     </div>
 </div>
+
+<!-- Update this function in the view file -->
+<?php
+function getStatusColor($status)
+{
+    $colors = [
+        'pending' => 'warning',
+        'processing' => 'info',
+        'shipped' => 'primary',
+        'delivered' => 'success',
+        'canceled' => 'danger'
+    ];
+    return $colors[$status] ?? 'secondary';
+}
+
+function formatOrderStatus($status)
+{
+    $statuses = [
+        'pending' => 'Pendente',
+        'processing' => 'Processando',
+        'shipped' => 'Enviado',
+        'delivered' => 'Entregue',
+        'canceled' => 'Cancelado'
+    ];
+    return $statuses[$status] ?? $status;
+}
+?>
