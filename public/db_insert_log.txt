@@ -23,3 +23,13 @@ Params: Array
 )
 
 Last Insert ID: 1
+SQL: INSERT INTO meal_order_status_history (order_id, status, notes) 
+            VALUES (:order_id, :status, :notes)
+Params: Array
+(
+    [:order_id] => 1
+    [:status] => processing
+    [:notes] => 
+)
+
+Last Insert ID: 1

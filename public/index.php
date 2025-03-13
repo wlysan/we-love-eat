@@ -16,7 +16,6 @@ foreach ($controllerFiles as $controller) {
 // Simple router
 $route = getCurrentRoute();
 $auth = Auth::getInstance();
-
 // Define routes and their handlers
 $routes = [
     // Public routes
@@ -89,6 +88,13 @@ $routes = [
     '/meals/orders' => 'MealController::orders',
     '/meals/orders/view' => 'MealController::viewOrder',
     '/meals/orders/cancel' => 'MealController::cancelOrder',
+    
+    // Meal packages routes (NOVO)
+    '/meals/packages' => 'MealPackageController::index',
+    '/meals/packages/create' => 'MealPackageController::createPackage',
+    '/meals/packages/view' => 'MealPackageController::viewPackage',
+    '/meals/packages/list' => 'MealPackageController::listPackages',
+    '/meals/packages/cancel' => 'MealPackageController::cancelPackage',
 
     // API routes
     '/api/meals' => 'ApiController::meals',
@@ -126,7 +132,13 @@ $authRequirements = [
         '/meals/order',
         '/meals/orders',
         '/meals/orders/view',
-        '/meals/orders/cancel'
+        '/meals/orders/cancel',
+        // Adicionar rotas de pacotes para usuários (NOVO)
+        '/meals/packages',
+        '/meals/packages/create',
+        '/meals/packages/view',
+        '/meals/packages/list',
+        '/meals/packages/cancel'
     ],
     'nutritionist' => [
         '/nutritionist/dashboard',
@@ -163,8 +175,6 @@ $authRequirements = [
         '/admin/restaurants/create',
         '/admin/restaurants/edit'
     ],
-
-
 ];
 
 // Check if route exists

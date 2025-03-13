@@ -1,22 +1,24 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= $title ?? APP_NAME ?></title>
-    
+
     <!-- Favicon -->
     <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
-    
+
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    
+
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+
     <!-- Custom CSS -->
     <link rel="stylesheet" href="/css/styles.css">
 </head>
+
 <body>
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
@@ -48,6 +50,11 @@
                             <li class="nav-item">
                                 <a class="nav-link <?= getCurrentRoute() === '/chats' ? 'active' : '' ?>" href="/chats">
                                     Conversas
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link <?= getCurrentRoute() === '/meals/packages/list' ? 'active' : '' ?>" href="/meals/packages/list">
+                                    Pacotes de Refeições
                                 </a>
                             </li>
                         </ul>
@@ -119,7 +126,7 @@
                             </li>
                         </ul>
                     <?php endif; ?>
-                    
+
                     <ul class="navbar-nav ms-auto">
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
@@ -128,7 +135,9 @@
                             <ul class="dropdown-menu dropdown-menu-end">
                                 <li><a class="dropdown-item" href="/profile"><i class="fas fa-user me-2"></i> Meu Perfil</a></li>
                                 <li><a class="dropdown-item" href="/profile/measurements"><i class="fas fa-weight me-2"></i> Medidas</a></li>
-                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
                                 <li><a class="dropdown-item" href="/logout"><i class="fas fa-sign-out-alt me-2"></i> Sair</a></li>
                             </ul>
                         </li>
@@ -175,11 +184,12 @@
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
+
     <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    
+
     <!-- Custom JavaScript -->
     <script src="/js/main.js"></script>
 </body>
+
 </html>

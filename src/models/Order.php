@@ -220,4 +220,18 @@ class Order
         $result = $this->db->fetchOne($sql, [':restaurant_id' => $restaurantId]);
         return $result ? $result['count'] : 0;
     }
+
+    /**
+     * Get orders associated with a package
+     */
+    public function getByPackageId($packageId)
+    {
+        $sql = "SELECT mo.*, 
+            (SELECT COUNT(*) FROM meal_order_items WHERE order_id = mo.id) as item_count
+            FROM meal_orders mo
+            WHERE mo.package_id = :package_id
+            ORDER BY mo.created_at DESC";
+
+        return $this->db->fetchAll($sql, [':package_id' => $packageId]);
+    }
 }
